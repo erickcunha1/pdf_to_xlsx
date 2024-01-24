@@ -15,7 +15,8 @@ class PDFConverterApp:
         self.pasta_destino = ""
         self.pasta_excel = ""
         self.tipo_conta = tk.StringVar()  # Variável para armazenar o tipo de conta
-        self.tipo_conta.set("Agua")  # Valor padrão
+        self.tipo_conta.set("Agua")
+        self.tipo_conta_str = ''  # Valor padrão
         self.exist = True
         # Botões
         self.btn_selecionar_origem = tk.Button(root, text="Selecionar Pasta de Origem", command=self.selecionar_pasta_origem)
@@ -37,10 +38,18 @@ class PDFConverterApp:
     def selecionar_pasta_origem(self):
         self.pasta_origem = filedialog.askdirectory(initialdir=Path.home(), title="Selecione a pasta")
         messagebox.showinfo("Pasta de Origem", f"Pasta de Origem selecionada: {self.pasta_origem}")
+        print(type(self.pasta_origem))
+        if self.tipo_conta.get() == "Agua":
+            tipo_conta_str = "AGUA"
+        elif self.tipo_conta.get() == "Luz":
+            tipo_conta_str = "LUZ"
+        else:
+            tipo_conta_str = ""
+
 
         # Cria as pastas de destino e Excel na área de trabalho se não existirem
-        self.pasta_destino = os.path.join(Path.home(), 'Desktop', f"PDF's Concluidos - {self.tipo_conta.get()}")
-        self.pasta_excel = os.path.join(Path.home(), 'Desktop', f"PDF's - EXCEL - {self.tipo_conta.get()}")
+        self.pasta_destino = os.path.join(Path.home(), 'Desktop', f"PDF's Concluidos - {tipo_conta_str}")
+        self.pasta_excel = os.path.join(Path.home(), 'Desktop', f"PDF's - EXCEL - {tipo_conta_str}")
         self.criar_diretorio_se_nao_existir(self.pasta_destino)
         self.criar_diretorio_se_nao_existir(self.pasta_excel)
         

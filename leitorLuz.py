@@ -18,10 +18,6 @@ def extrair_texto(caminho_do_pdf, pasta_excel, arquivo):
         
         texto = pagina.get_text()
         
-        nome_arquivo = substituir_extensao(arquivo, 'txt',f"_{(numero_pagina + 1)}")
-        caminho_arquivo_txt_linha = os.path.join(os.getcwd(), 'txt', nome_arquivo)
-        with open(caminho_arquivo_txt_linha, 'w') as arquivo_destino:
-                arquivo_destino.write(texto)
         if 'CONSUMO FATURADO' in texto:
             dados['Página'].append(numero_pagina + 1)
             dados['mes_ref'].append(retornar_item_da_nota(texto, "REF:", 2))
