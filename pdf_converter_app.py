@@ -56,7 +56,7 @@ class PDFConverterApp:
         
         tipo_conta_str = self.tipo_conta.get()
         self.pasta_destino = os.path.join(Path.home(), 'Desktop', f"PDF's Concluidos - {tipo_conta_str}")
-        self.pasta_excel = os.path.join(Path.home(), 'Desktop', f"PDF's - EXCEL - {tipo_conta_str}")
+        self.pasta_excel = os.path.join(Path.home(), 'Desktop', f"Excel - {tipo_conta_str}")
 
         self.criar_diretorio_se_nao_existir(self.pasta_destino)
         self.criar_diretorio_se_nao_existir(self.pasta_excel)
@@ -81,7 +81,6 @@ class PDFConverterApp:
             self.btn_converter["state"] = "disabled"  
             self.btn_selecionar_origem["state"] = "disabled"
             self.tipo_conta.set("Nenhum")
-
         else:
             print('Não foi possível efetuar a conversão!')
 

@@ -10,7 +10,7 @@ def substituir_extensao(nome_arquivo, nova_extensao, complemento=""):
     novo_nome = f"{root}{complemento}.{nova_extensao}"
     return novo_nome
 
-def extrair_texto(caminho_do_pdf, pasta_excel, arquivo):
+def extrair_texto(caminho_do_pdf):
     dados = {'Página': [], 'mes_ref': [], 'matricula': [], 'endereco_1': [], 'endereco_2': [], 'consumo': [], 'vencimento': [], 'valor_total': [], 'tipo': []}
     documento_pdf = fitz.open(caminho_do_pdf)
 
@@ -29,12 +29,36 @@ def extrair_texto(caminho_do_pdf, pasta_excel, arquivo):
         dados['tipo'].append('AGUA') 
         
     documento_pdf.close()
+    
+    return pd.DataFrame(dados)
 
-    df = pd.DataFrame(dados)
+def processar_arquivos(origem, destino, pasta_excel):
+    arquivos = os.listdir(origem)
+    dados_combinados = pd.DataFrame()
 
-    nome_excel = substituir_extensao(arquivo, 'xlsx')
-    caminho_completo_excel = os.path.join(pasta_excel, nome_excel)
-    df.to_excel(caminho_completo_excel, index=False)
+    for arquivo in arquivos:
+        caminho_completo_origem = os.path.join(origem, arquivo)
+
+        if os.path.isfile(caminho_completo_origem):
+            df_temp = extrair_texto(caminho_completo_origem)
+            dados_combinados = pd.concat([dados_combinados, df_temp], ignore_index=True)
+            
+            caminho_completo_destino = os.path.join(destino, arquivo)
+
+            shutil.move(caminho_completo_origem, caminho_completo_destino)
+            print(f'Arquivo movido: {arquivo}')
+    
+    # Load existing data from the Excel file, if it exists
+    caminho_excel_existente = os.path.join(pasta_excel, 'dados_combinados.xlsx')
+    if os.path.exists(caminho_excel_existente):
+        dados_existente = pd.read_excel(caminho_excel_existente)
+        dados_combinados = pd.concat([dados_existente, dados_combinados], ignore_index=True)
+    
+    if not dados_combinados.empty:
+        nome_excel = 'dados_combinados.xlsx'
+        caminho_completo_excel = os.path.join(pasta_excel, nome_excel)
+        dados_combinados.to_excel(caminho_completo_excel, index=False)
+        print(f'Dados combinados salvos em: {caminho_completo_excel}')
 
 def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
     linhas = texto.split('\n')
@@ -51,25 +75,8 @@ def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
             if marco_zero == qtd_linhas:
                 return linha
 
-def processar_arquivos(origem, destino, pasta_excel):
-    arquivos = os.listdir(origem)
-
-    for arquivo in arquivos:
-        caminho_completo_origem = os.path.join(origem, arquivo)
-
-        if os.path.isfile(caminho_completo_origem):
-            extrair_texto(caminho_completo_origem, pasta_excel, arquivo)
-            
-            caminho_completo_destino = os.path.join(destino, arquivo)
-
-            shutil.move(caminho_completo_origem, caminho_completo_destino)
-            print(f'Arquivo movido: {arquivo}')
-
-
-pasta_origem = os.path.join(os.getcwd(), "PDF's Agua")
-pasta_destino = os.path.join(os.getcwd(), "PDF's Concluidos")
-pasta_excel = os.path.join(os.getcwd(), 'Excel Processado')
-
-
 if __name__ == '__main__':
+    pasta_origem = os.path.join(os.getcwd(), "PDF's Agua")
+    pasta_destino = os.path.join(os.getcwd(), "PDF's Concluidos")
+    pasta_excel = os.path.join(os.getcwd(), 'Excel Processado')
     processar_arquivos(pasta_origem, pasta_destino, pasta_excel)
