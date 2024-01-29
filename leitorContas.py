@@ -16,7 +16,7 @@ def extrair_texto(caminho_do_pdf):
 
     for numero_pagina in range(documento_pdf.page_count):
         pagina = documento_pdf[numero_pagina]
-        
+
         texto = pagina.get_text()
         dados['Página'].append(numero_pagina + 1)
         dados['mes_ref'].append(retornar_item_da_nota(texto, "Rot. Leitura", 5))
@@ -27,9 +27,9 @@ def extrair_texto(caminho_do_pdf):
         dados['vencimento'].append(retornar_item_da_nota(texto, "INFORMAÇÕES DE", 10)) 
         dados['valor_total'].append(retornar_item_da_nota(texto, "INFORMAÇÕES DE", 11)) 
         dados['tipo'].append('AGUA') 
-        
+
     documento_pdf.close()
-    
+
     return pd.DataFrame(dados)
 
 def processar_arquivos(origem, destino, pasta_excel):
@@ -42,18 +42,17 @@ def processar_arquivos(origem, destino, pasta_excel):
         if os.path.isfile(caminho_completo_origem):
             df_temp = extrair_texto(caminho_completo_origem)
             dados_combinados = pd.concat([dados_combinados, df_temp], ignore_index=True)
-            
+
             caminho_completo_destino = os.path.join(destino, arquivo)
 
             shutil.move(caminho_completo_origem, caminho_completo_destino)
             print(f'Arquivo movido: {arquivo}')
-    
-    # Load existing data from the Excel file, if it exists
+
     caminho_excel_existente = os.path.join(pasta_excel, 'dados_combinados.xlsx')
     if os.path.exists(caminho_excel_existente):
         dados_existente = pd.read_excel(caminho_excel_existente)
         dados_combinados = pd.concat([dados_existente, dados_combinados], ignore_index=True)
-    
+
     if not dados_combinados.empty:
         nome_excel = 'dados_combinados.xlsx'
         caminho_completo_excel = os.path.join(pasta_excel, nome_excel)

@@ -6,6 +6,7 @@ from leitorContas import processar_arquivos
 from leitorLuz import processar_arquivos_luz
 import os
 
+
 class PDFConverterApp:
     def __init__(self, root):
         self.root = root
@@ -53,7 +54,7 @@ class PDFConverterApp:
         self.pasta_origem = filedialog.askdirectory(initialdir=Path.home(), title="Selecione a pasta")
         messagebox.showinfo("Pasta de Origem", f"Pasta de Origem selecionada: {self.pasta_origem}")
         self.btn_converter["state"] = "active"  # Ativar o botão de conversão
-        
+
         tipo_conta_str = self.tipo_conta.get()
         self.pasta_destino = os.path.join(Path.home(), 'Desktop', f"PDF's Concluidos - {tipo_conta_str}")
         self.pasta_excel = os.path.join(Path.home(), 'Desktop', f"Excel - {tipo_conta_str}")
@@ -90,6 +91,7 @@ class PDFConverterApp:
         if not Path(caminho_completo).exists():
             Path(caminho_completo).mkdir(parents=True)
             self.exist = False
+
 
 if __name__ == "__main__":
     root = tk.Tk()
