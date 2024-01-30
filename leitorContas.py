@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import shutil
 import sys
-
+import re
 
 def substituir_extensao(nome_arquivo, nova_extensao, complemento=""):
     root, extensao = os.path.splitext(nome_arquivo)
@@ -11,7 +11,18 @@ def substituir_extensao(nome_arquivo, nova_extensao, complemento=""):
     return novo_nome
 
 def extrair_texto(caminho_do_pdf):
-    dados = {'Página': [], 'mes_ref': [], 'matricula': [], 'endereco_1': [], 'endereco_2': [], 'consumo': [], 'vencimento': [], 'valor_total': [], 'tipo': []}
+    dados = {
+        'Página': [], 
+        'Mes Referencia': [], 
+        'Matricula': [], 
+        'Endereço': [], 
+        'Municipio': [],
+        'Bairro': [],
+        'Consumo M3': [], 
+        'Vencimento': [], 
+        'Valor Total': [], 
+        'Tipo': []
+        }
     documento_pdf = fitz.open(caminho_do_pdf)
 
     for numero_pagina in range(documento_pdf.page_count):
@@ -19,14 +30,15 @@ def extrair_texto(caminho_do_pdf):
 
         texto = pagina.get_text()
         dados['Página'].append(numero_pagina + 1)
-        dados['mes_ref'].append(retornar_item_da_nota(texto, "Rot. Leitura", 5))
-        dados['matricula'].append(retornar_item_da_nota(texto, "Rot. Leitura", 6)) 
-        dados['endereco_1'].append(retornar_item_da_nota(texto, "Rot. Leitura", 27)) 
-        dados['endereco_2'].append(retornar_item_da_nota(texto, "Rot. Leitura", 28)) 
-        dados['consumo'].append(retornar_item_da_nota(texto, "CONSUMO ÁGUA", 1)) 
-        dados['vencimento'].append(retornar_item_da_nota(texto, "INFORMAÇÕES DE", 10)) 
-        dados['valor_total'].append(retornar_item_da_nota(texto, "INFORMAÇÕES DE", 11)) 
-        dados['tipo'].append('AGUA') 
+        dados['Mes Referencia'].append(retornar_item_da_nota(texto, "Rot. Leitura", 5))
+        dados['Matricula'].append(retornar_item_da_nota(texto, "Rot. Leitura", 6)) 
+        dados['Endereço'].append(retornar_item_da_nota(texto, "Rot. Leitura", 27)) 
+        dados['Municipio'].append(retornar_item_da_nota(texto, "Rot. Leitura", 28))
+        dados['Bairro'].append(bairro)
+        dados['Consumo M3'].append(retornar_item_da_nota(texto, "CONSUMO ÁGUA", 1)) 
+        dados['Vencimento'].append(retornar_item_da_nota(texto, "INFORMAÇÕES DE", 10)) 
+        dados['Valor Total'].append(retornar_item_da_nota(texto, "INFORMAÇÕES DE", 11)) 
+        dados['Tipo'].append('AGUA') 
 
     documento_pdf.close()
 
@@ -61,18 +73,36 @@ def processar_arquivos(origem, destino, pasta_excel):
 
 def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
     linhas = texto.split('\n')
-
     encontrou = False
     marco_zero = 0
 
+    padrao = r'CONSUMO ÁGUA\s+(\d+)M3'
+    padrao_bairro = r'-.*$'
+
+    global bairro
+    bairro = None
+
+
     for numero_linha, linha in enumerate(linhas):
+        correspondencia = re.search(padrao, linha)
+        padrao_ba = re.search(padrao_bairro, linha)
+
+
         if ponto_inicial.lower() in linha.lower() and encontrou == False:
             encontrou = True
 
         if encontrou:
             marco_zero += 1
             if marco_zero == qtd_linhas:
+
+                if correspondencia:
+                    return correspondencia.group(1)
+                elif padrao_ba:
+                    bairro = padrao_ba.group()
+                    novo_texto = re.sub(padrao_bairro, '', linha)
+                    return novo_texto
                 return linha
+
 
 if __name__ == '__main__':
     pasta_origem = os.path.join(os.getcwd(), "PDF's Agua")

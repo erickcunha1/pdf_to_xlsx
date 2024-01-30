@@ -12,7 +12,18 @@ def substituir_extensao(nome_arquivo, nova_extensao, complemento="") -> str:
     return novo_nome
 
 def extrair_texto(caminho_do_pdf):
-    dados = {'Página': [], 'mes_ref': [], 'matricula': [], 'endereco_1': [],'endereco_2': [], 'CEP': [], 'consumo': [], 'vencimento': [], 'valor_total': [], 'tipo': []}
+    dados = {
+        'Página': [], 
+        'Mes Referencia': [], 
+        'Matricula': [], 
+        'Endereço': [],
+        'Municipio/Bairro': [], 
+        'CEP': [], 
+        'Consumo': [], 
+        'Vencimento': [], 
+        'Valor Total': [], 
+        'Tipo': []
+    }
     documento_pdf = fitz.open(caminho_do_pdf)
 
     for numero_pagina in range(documento_pdf.page_count):
@@ -21,15 +32,15 @@ def extrair_texto(caminho_do_pdf):
         texto = pagina.get_text()
         if 'CONSUMO FATURADO' in texto:
             dados['Página'].append(numero_pagina + 1)
-            dados['mes_ref'].append(retornar_item_da_nota(texto, "REF:", 2))
-            dados['matricula'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 11)) 
-            dados['endereco_1'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 5)) 
-            dados['endereco_2'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 7))
+            dados['Mes Referencia'].append(retornar_item_da_nota(texto, "REF:", 2))
+            dados['Matricula'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 11)) 
+            dados['Endereço'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 5)) 
+            dados['Municipio/Bairro'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 7))
             dados['CEP'].append(numero_encontrado)
-            dados['consumo'].append(retornar_item_da_nota(texto, "Consumo-TE", 3)) 
-            dados['vencimento'].append(retornar_item_da_nota(texto, "VENCIMENTO", 2)) 
-            dados['valor_total'].append(retornar_item_da_nota(texto, "TOTAL A PAGAR R$", 2)) 
-            dados['tipo'].append('LUZ')
+            dados['Consumo'].append(retornar_item_da_nota(texto, "Consumo-TE", 3)) 
+            dados['Vencimento'].append(retornar_item_da_nota(texto, "VENCIMENTO", 2)) 
+            dados['Valor Total'].append(retornar_item_da_nota(texto, "TOTAL A PAGAR R$", 2)) 
+            dados['Tipo'].append('LUZ')
 
     documento_pdf.close()
     return pd.DataFrame(dados)
