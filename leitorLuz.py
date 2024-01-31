@@ -30,7 +30,7 @@ def extrair_texto(caminho_do_pdf):
         pagina = documento_pdf[numero_pagina]
 
         texto = pagina.get_text()
-        if 'CONSUMO FATURADO' in texto:
+        if 'PAGUE COM PIX' in texto:
             dados['Página'].append(numero_pagina + 1)
             dados['Mes Referencia'].append(retornar_item_da_nota(texto, "REF:", 2))
             dados['Matricula'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 11)) 
@@ -77,7 +77,7 @@ def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
     encontrou = False
     marco_zero = 0
     cep_pattern = r'(\d{5}-\d{3})'
-    
+
     global numero_encontrado
     numero_encontrado = None
 

@@ -5,6 +5,7 @@ import shutil
 import sys
 import re
 
+
 def substituir_extensao(nome_arquivo, nova_extensao, complemento=""):
     root, extensao = os.path.splitext(nome_arquivo)
     novo_nome = f"{root}{complemento}.{nova_extensao}"
@@ -82,11 +83,9 @@ def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
     global bairro
     bairro = None
 
-
     for numero_linha, linha in enumerate(linhas):
         correspondencia = re.search(padrao, linha)
         padrao_ba = re.search(padrao_bairro, linha)
-
 
         if ponto_inicial.lower() in linha.lower() and encontrou == False:
             encontrou = True
