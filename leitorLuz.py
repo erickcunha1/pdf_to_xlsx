@@ -30,7 +30,7 @@ def extrair_texto(caminho_do_pdf):
         pagina = documento_pdf[numero_pagina]
 
         texto = pagina.get_text()
-        if 'PAGUE COM PIX' in texto:
+        if 'FISCO' in texto:
             dados['Página'].append(numero_pagina + 1)
             dados['Mes Referencia'].append(retornar_item_da_nota(texto, "REF:", 2))
             dados['Matricula'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 11)) 
@@ -39,12 +39,12 @@ def extrair_texto(caminho_do_pdf):
             dados['CEP'].append(numero_encontrado)
             dados['Consumo'].append(retornar_item_da_nota(texto, "Consumo-TE", 3)) 
             dados['Vencimento'].append(retornar_item_da_nota(texto, "VENCIMENTO", 2)) 
-            dados['Valor Total'].append(retornar_item_da_nota(texto, "TOTAL A PAGAR R$", 2)) 
+            dados['Valor Total'].append(retornar_item_da_nota(texto, "TOTAL A PAGAR R$", 2))
             dados['Tipo'].append('LUZ')
 
     documento_pdf.close()
     return pd.DataFrame(dados)
-
+    
 def processar_arquivos_luz(origem, destino, pasta_excel):
     arquivos = os.listdir(origem)
     dados_combinados = pd.DataFrame()
@@ -60,7 +60,7 @@ def processar_arquivos_luz(origem, destino, pasta_excel):
 
            shutil.move(caminho_completo_origem, caminho_completo_destino)
            print(f'Arquivo movido: {arquivo}')
-        
+
     caminho_excel_existente = os.path.join(pasta_excel, 'dados_combinados.xlsx')
     if os.path.exists(caminho_excel_existente):
         dados_existentes = pd.read_excel(caminho_excel_existente)
@@ -97,8 +97,8 @@ def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
                 if linha == 'CÓDIGO DO CLIENTE':
                     linha = linhas[numero_linha + 1]
                 elif correspondencia:
-                    return correspondencia
-                return linha
+                    return correspondencia.strip()
+                return linha.strip()
 
 
 if __name__ == '__main__':
