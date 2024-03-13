@@ -2,7 +2,6 @@ import fitz
 import pandas as pd
 import os
 import shutil
-import sys
 import re
 
 
@@ -32,19 +31,19 @@ def extrair_texto(caminho_do_pdf):
         texto = pagina.get_text()
         if 'FISCO' in texto:
             dados['Página'].append(numero_pagina + 1)
-            dados['Mes Referencia'].append(retornar_item_da_nota(texto, "REF:", 2))
-            dados['Matricula'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 11)) 
-            dados['Endereço'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 5)) 
-            dados['Municipio/Bairro'].append(retornar_item_da_nota(texto, " NOME DO CLIENTE:", 7))
+            dados['Mes Referencia'].append(retornar_item_da_nota_luz(texto, "REF:", 2))
+            dados['Matricula'].append(retornar_item_da_nota_luz(texto, " NOME DO CLIENTE:", 11)) 
+            dados['Endereço'].append(retornar_item_da_nota_luz(texto, " NOME DO CLIENTE:", 5)) 
+            dados['Municipio/Bairro'].append(retornar_item_da_nota_luz(texto, " NOME DO CLIENTE:", 7))
             dados['CEP'].append(numero_encontrado)
-            dados['Consumo'].append(retornar_item_da_nota(texto, "Consumo-TE", 3)) 
-            dados['Vencimento'].append(retornar_item_da_nota(texto, "VENCIMENTO", 2)) 
-            dados['Valor Total'].append(retornar_item_da_nota(texto, "TOTAL A PAGAR R$", 2))
+            dados['Consumo'].append(retornar_item_da_nota_luz(texto, "Consumo-TE", 3)) 
+            dados['Vencimento'].append(retornar_item_da_nota_luz(texto, "VENCIMENTO", 2)) 
+            dados['Valor Total'].append(retornar_item_da_nota_luz(texto, "TOTAL A PAGAR R$", 2))
             dados['Tipo'].append('LUZ')
 
     documento_pdf.close()
     return pd.DataFrame(dados)
-    
+
 def processar_arquivos_luz(origem, destino, pasta_excel):
     arquivos = os.listdir(origem)
     dados_combinados = pd.DataFrame()
@@ -72,7 +71,7 @@ def processar_arquivos_luz(origem, destino, pasta_excel):
         dados_combinados.to_excel(caminho_completo_excel, index=False)
         print(f'Dados combinados salvos em: {caminho_completo_excel}')
 
-def retornar_item_da_nota(texto, ponto_inicial, qtd_linhas):
+def retornar_item_da_nota_luz(texto, ponto_inicial, qtd_linhas):
     linhas = texto.split('\n')
     encontrou = False
     marco_zero = 0

@@ -4,6 +4,7 @@ from tkinter import messagebox
 from pathlib import Path
 from leitorContas import processar_arquivos
 from leitorLuz import processar_arquivos_luz
+from leitorTelefone import processar_arquivos_telefone
 import os
 
 
@@ -30,6 +31,9 @@ class PDFConverterApp:
         self.radio_agua.pack()
 
         self.radio_luz = tk.Radiobutton(frame, text="Luz", variable=self.tipo_conta, value="Luz", command=self.ativar_botao_origem)
+        self.radio_luz.pack()
+        
+        self.radio_luz = tk.Radiobutton(frame, text="Telefone", variable=self.tipo_conta, value="Telefone", command=self.ativar_botao_origem)
         self.radio_luz.pack()
 
         # Botão de seleção de pasta de origem
@@ -80,6 +84,13 @@ class PDFConverterApp:
             processar_arquivos_luz(self.pasta_origem, self.pasta_destino, self.pasta_excel)
             messagebox.showinfo("Concluído", "PDFs convertidos com sucesso!")
             self.btn_converter["state"] = "disabled"  
+            self.btn_selecionar_origem["state"] = "disabled"
+            self.tipo_conta.set("Nenhum")
+
+        elif self.tipo_conta.get() == 'Telefone':
+            processar_arquivos_telefone(self.pasta_origem, self.pasta_destino, self.pasta_excel)
+            messagebox.showinfo("Concluído", 'PDFs convertidos com sucesso!')
+            self.btn_converter["state"] = "disabled"
             self.btn_selecionar_origem["state"] = "disabled"
             self.tipo_conta.set("Nenhum")
         else:
